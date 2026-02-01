@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Solar System Adventure! 🚀</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #000428, #004e92);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 2.5em;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            color: #ffd700;
+        }
+
+        .solar-system {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .planet {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .planet:hover {
+            transform: scale(1.1);
+        }
+
+        .planet-circle {
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+        }
+
+        .planet-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* Planet specific styles */
+        .mercury .planet-circle { background: #8c7853; width: 50px; height: 50px; }
+        .venus .planet-circle { background: #ffc649; width: 65px; height: 65px; }
+        .earth .planet-circle { background: #4a90e2; width: 70px; height: 70px; }
+        
+        /* Earth and Moon container */
+        .earth {
+            position: relative;
+            padding: 60px;
+        }
+        
+        .moon-orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 140px;
+            height: 140px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: rotate 10s linear infinite;
+        }
+        
+        .moon {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px;
+            height: 25px;
+            background: #d3d3d3;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .moon:hover {
+            transform: translateX(-50%) scale(1.2);
+        }
+        
+        .moon-emoji {
+            font-size: 20px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .mars .planet-circle { background: #cd5c5c; width: 55px; height: 55px; }
+        .jupiter .planet-circle { background: #daa520; width: 120px; height: 120px; font-size: 3em; }
+        .saturn .planet-circle { background: #f4a460; width: 110px; height: 110px; font-size: 2.5em; position: relative; }
+        .uranus .planet-circle { background: #4fd1d9; width: 85px; height: 85px; }
+        .neptune .planet-circle { background: #4169e1; width: 80px; height: 80px; }
+        .pluto .planet-circle { background: #c9a17a; width: 45px; height: 45px; }
+        .sun .planet-circle { background: #ffa500; width: 140px; height: 140px; font-size: 3.5em; box-shadow: 0 0 40px #ffa500; }
+
+        /* Saturn's ring */
+        .saturn .planet-circle::after {
+            content: '';
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            border: 10px solid rgba(218, 165, 32, 0.4);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateX(75deg);
+        }
+
+        .info-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            max-width: 500px;
+            width: 90%;
+            z-index: 1000;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .info-panel.active {
+            display: block;
+        }
+
+        .info-header {
+            font-size: 2em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .info-content {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin: 15px 0;
+        }
+
+        .fun-fact {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #ffd700;
+        }
+
+        .close-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto 0;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #ff5252;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .title { font-size: 1.8em; }
+            .subtitle { font-size: 1em; }
+            .planet-circle { transform: scale(0.8); }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <h1 class="title">🌟 My Solar System Adventure! 🚀</h1>
+    <p class="subtitle">Click on each planet to learn amazing facts!</p>
+
+    <div class="solar-system">
+        <div class="planet sun" data-planet="sun">
+            <div class="planet-circle">☀️</div>
+            <div class="planet-name">The Sun</div>
+        </div>
+        
+        <div class="planet mercury" data-planet="mercury">
+            <div class="planet-circle">☄️</div>
+            <div class="planet-name">Mercury</div>
+        </div>
+
+        <div class="planet venus" data-planet="venus">
+            <div class="planet-circle">✨</div>
+            <div class="planet-name">Venus</div>
+        </div>
+
+        <div class="planet earth" data-planet="earth">
+            <div class="moon-orbit">
+                <div class="moon" data-planet="moon">
+                    <div class="moon-emoji">🌙</div>
+                </div>
+            </div>
+            <div class="planet-circle">🌍</div>
+            <div class="planet-name">Earth</div>
+        </div>
+
+        <div class="planet mars" data-planet="mars">
+            <div class="planet-circle">🔴</div>
+            <div class="planet-name">Mars</div>
+        </div>
+
+        <div class="planet jupiter" data-planet="jupiter">
+            <div class="planet-circle">🌪️</div>
+            <div class="planet-name">Jupiter</div>
+        </div>
+
+        <div class="planet saturn" data-planet="saturn">
+            <div class="planet-circle">💫</div>
+            <div class="planet-name">Saturn</div>
+        </div>
+
+        <div class="planet uranus" data-planet="uranus">
+            <div class="planet-circle">❄️</div>
+            <div class="planet-name">Uranus</div>
+        </div>
+
+        <div class="planet neptune" data-planet="neptune">
+            <div class="planet-circle">🌊</div>
+            <div class="planet-name">Neptune</div>
+        </div>
+
+        <div class="planet pluto" data-planet="pluto">
+            <div class="planet-circle">💙</div>
+            <div class="planet-name">Pluto</div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="info-panel" id="infoPanel">
+        <div id="planetInfo"></div>
+        <button class="close-btn" onclick="closeInfo()">Close</button>
+    </div>
+
+    <script>
+        const planetData = {
+            sun: {
+                emoji: "☀️",
+                name: "The Sun",
+                size: "SUPER HUGE! Biggest thing in our solar system!",
+                visited: "No, it's way too hot!",
+                facts: [
+                    "🔥 The Sun is a giant ball of hot, glowing gas!",
+                    "🌟 It gives us light and warmth every day!",
+                    "⚠️ Never look directly at the Sun - it can hurt your eyes!",
+                    "🎨 The Sun is about 1 million times bigger than Earth!"
+                ]
+            },
+            mercury: {
+                emoji: "☄️",
+                name: "Mercury",
+                size: "Small - like a tiny marble!",
+                visited: "No people, but robots have visited!",
+                facts: [
+                    "🏃 Mercury is the fastest planet - it zooms around the Sun!",
+                    "🌡️ Super hot during the day, freezing cold at night!",
+                    "🌑 Covered in bumps and holes called craters!",
+                    "📍 It's the closest planet to the Sun!"
+                ]
+            },
+            venus: {
+                emoji: "✨",
+                name: "Venus",
+                size: "Almost the same size as Earth!",
+                visited: "No people, but robots have landed there!",
+                facts: [
+                    "🌟 The brightest planet in our sky - you can see it at night!",
+                    "🔥 The HOTTEST planet - even hotter than Mercury!",
+                    "☁️ Covered in thick, yellow clouds!",
+                    "🌪️ Has super strong winds and storms!"
+                ]
+            },
+            earth: {
+                emoji: "🌍",
+                name: "Earth",
+                size: "Just right for us!",
+                visited: "YES! We live here! 🏠",
+                facts: [
+                    "💙 The only planet with water, air, and life!",
+                    "🌈 Home to you, me, and all animals and plants!",
+                    "🌊 Most of Earth is covered in water - that's why it looks blue!",
+                    "🌙 Earth has one moon that lights up our night sky!"
+                ]
+            },
+            moon: {
+                emoji: "🌙",
+                name: "The Moon",
+                size: "About 1/4 the size of Earth",
+                visited: "YES! 12 astronauts walked on the Moon! 👨‍🚀",
+                facts: [
+                    "🚀 Neil Armstrong was the first person to walk on the Moon in 1969!",
+                    "👣 You can still see the astronauts' footprints up there - they never go away!",
+                    "🌙 The Moon makes our ocean tides go up and down!",
+                    "🌑 Takes about 27 days to orbit around Earth!",
+                    "🏔️ Has mountains and craters but no air or water!"
+                ]
+            },
+            mars: {
+                emoji: "🔴",
+                name: "Mars",
+                size: "Half the size of Earth",
+                visited: "No people yet, but lots of robot rovers!",
+                facts: [
+                    "🔴 Called the Red Planet because it's covered in rusty red dirt!",
+                    "🤖 Robot rovers drive around exploring Mars right now!",
+                    "⛰️ Has the biggest volcano in the whole solar system!",
+                    "👨‍🚀 Scientists want to send people there someday!"
+                ]
+            },
+            jupiter: {
+                emoji: "🌪️",
+                name: "Jupiter",
+                size: "ENORMOUS! The biggest planet!",
+                visited: "No people, but spaceships have flown by!",
+                facts: [
+                    "🎈 So big that 1,300 Earths could fit inside!",
+                    "🌪️ Has a giant red spot - a huge storm bigger than Earth!",
+                    "🌙 Has 97 moons! That's a lot of moons!",
+                    "💨 Made mostly of gas - you couldn't stand on it!"
+                ]
+            },
+            saturn: {
+                emoji: "💫",
+                name: "Saturn",
+                size: "Really big - second biggest planet!",
+                visited: "No people, but spaceships have visited!",
+                facts: [
+                    "💍 Famous for its beautiful rings made of ice and rocks!",
+                    "🎪 Has thousands of rings that go around it!",
+                    "🌙 Has 274 moons - even more than Jupiter!",
+                    "🪶 So light it could float in a bathtub (if you had one big enough)!"
+                ]
+            },
+            uranus: {
+                emoji: "❄️",
+                name: "Uranus",
+                size: "Big and icy!",
+                visited: "Only one spacecraft flew by in 1986!",
+                facts: [
+                    "💙 A beautiful blue-green color!",
+                    "🔄 Spins on its side like a rolling ball!",
+                    "❄️ Super cold and made of ice and gas!",
+                    "💍 Has faint rings around it too!"
+                ]
+            },
+            neptune: {
+                emoji: "🌊",
+                name: "Neptune",
+                size: "Big and blue!",
+                visited: "Only one spacecraft flew by in 1989!",
+                facts: [
+                    "💙 Deep blue color like the ocean!",
+                    "🌪️ Has the strongest winds in the solar system!",
+                    "🥶 The coldest planet - super duper freezing!",
+                    "📍 The farthest planet from the Sun!"
+                ]
+            },
+            pluto: {
+                emoji: "💙",
+                name: "Pluto",
+                size: "Very small - smaller than our Moon!",
+                visited: "Yes! A robot spacecraft called New Horizons visited in 2015!",
+                facts: [
+                    "💙 Has a big heart-shaped area made of ice!",
+                    "⭐ Used to be called the 9th planet, but now it's called a 'dwarf planet'!",
+                    "🌙 Has 5 moons! The biggest one is named Charon!",
+                    "❄️ Way out at the edge of our solar system in a place called the Kuiper Belt!",
+                    "🏔️ Has tall mountains made of water ice!"
+                ]
+            }
+        };
+
+        function showInfo(planetName) {
+            const planet = planetData[planetName];
+            const infoHTML = `
+                <div class="info-header">${planet.emoji} ${planet.name}</div>
+                <div class="info-content">
+                    <p><strong>📏 Size:</strong> ${planet.size}</p>
+                    <p><strong>👨‍🚀 Have people visited?</strong> ${planet.visited}</p>
+                    <div class="fun-fact">
+                        <strong>🎉 Fun Facts:</strong><br>
+                        ${planet.facts.map(fact => `<p>${fact}</p>`).join('')}
+                    </div>
+                </div>
+            `;
+            document.getElementById('planetInfo').innerHTML = infoHTML;
+            document.getElementById('infoPanel').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function closeInfo() {
+            document.getElementById('infoPanel').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        // Add click events to planets
+        document.querySelectorAll('.planet').forEach(planet => {
+            planet.addEventListener('click', () => {
+                const planetName = planet.getAttribute('data-planet');
+                showInfo(planetName);
+            });
+        });
+
+        // Add click event specifically for the moon to stop propagation
+        document.querySelector('.moon').addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent Earth from being clicked
+            showInfo('moon');
+        });
+
+        // Close on overlay click
+        document.getElementById('overlay').addEventListener('click', closeInfo);
+
+        // Create stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        createStars();
+    </script>
+</body>
+</html>
