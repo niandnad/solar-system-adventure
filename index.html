@@ -8,6 +8,11 @@
     <meta property="og:description" content="Explore our solar system! Click on planets to discover amazing facts.">
     <meta property="og:image" content="https://niandnad.github.io/solar-system-adventure/preview.png">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Solar System">
     <title>My Solar System Adventure! 🚀</title>
     <style>
         * {
@@ -289,10 +294,32 @@
             transform: scale(0.95);
         }
 
+        .offline-indicator {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            padding: 8px 12px;
+            background: rgba(100, 100, 100, 0.8);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+            display: none;
+            z-index: 2001;
+        }
+
+        .offline-indicator.show {
+            display: block;
+        }
+
         @media (max-width: 768px) {
             .title { font-size: 1.8em; }
             .subtitle { font-size: 1em; }
             .planet-circle { transform: scale(0.8); }
+            .offline-indicator {
+                top: 60px;
+                right: 10px;
+                font-size: 0.8em;
+            }
         }
     </style>
 </head>
@@ -302,6 +329,9 @@
         <source src="space-music.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
+    
+    <!-- Offline Status Indicator -->
+    <div class="offline-indicator" id="offlineIndicator">📡 You're offline</div>
     
     <!-- Music Toggle Button -->
     <button class="music-control" id="musicToggle" onclick="toggleMusic()" title="Toggle Music">
@@ -603,6 +633,33 @@
             // Remove this listener after first click
             document.body.removeEventListener('click', playOnFirstClick);
         }, { once: true });
+
+        // Register Service Worker for offline support
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js', { scope: '/solar-system-adventure/' }).then(registration => {
+                console.log('Service Worker registered successfully:', registration);
+            }).catch(error => {
+                console.log('Service Worker registration failed:', error);
+            });
+        }
+
+        // Monitor online/offline status
+        const offlineIndicator = document.getElementById('offlineIndicator');
+
+        function updateOnlineStatus() {
+            if (navigator.onLine) {
+                offlineIndicator.classList.remove('show');
+            } else {
+                offlineIndicator.classList.add('show');
+            }
+        }
+
+        // Check initial status
+        updateOnlineStatus();
+
+        // Listen for online/offline events
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
     </script>
 </body>
 </html>
